@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 from pathlib     import Path
-from telnetlib import SE
 from my_settings import DATABASES, SECRET_KEY
 
 import pymysql
