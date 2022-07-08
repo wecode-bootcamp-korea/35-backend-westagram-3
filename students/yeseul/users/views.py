@@ -14,6 +14,8 @@ class SignUpView(View):
     def post(self, request):
         try:
             request_data = json.loads(request.body)
+            print(request)
+            print(request_data)
             name         = request_data['name']
             email        = request_data['email']
             password     = request_data['password']
@@ -49,9 +51,6 @@ class LoginView(View):
             email        = request_data['email']
             password     = request_data['password']
         except KeyError:
-            return JsonResponse({'message' : 'KEY_ERROR'}, status = 400)
-        
-        if not email or not password:
             return JsonResponse({'message' : 'KEY_ERROR'}, status = 400)
 
         try: 
