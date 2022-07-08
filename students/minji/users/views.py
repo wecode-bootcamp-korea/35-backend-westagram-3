@@ -21,13 +21,8 @@ class UserView(View):
             if not re.match(REGEX_PASSWORD, data['password']):
                 return JsonResponse({"message" : "PW Error"}, status=400)
 
-            if not User.objects.filter(email = data['email']).exists():
+            if User.objects.filter(email = data['email']).exists():
                 return JsonResponse({"message" : "Email Duplicate"}, status=400)
-
-
-            # for user in User.objects.all().values():
-            #     if user['email'] == data['email']:
-            #         return JsonResponse({"message" : "Email Duplicate"}, status=400)
 
             User.objects.create(
                 name        = data['name'],
