@@ -41,3 +41,25 @@ class SignUpView(View):
         
         return JsonResponse({'message' : 'SUCCESS'}, status = 201)
 
+class LoginView(View):
+    # http -v POST 127.0.0.1:8000/users/login email='younghee@naver.com' password='1234!abc'
+    def post(self, request):
+        try:
+            request_data = json.loads(request.body)
+            email        = request_data['email']
+            password     = request_data['password']
+        except KeyError:
+            return JsonResponse({'message' : 'KEY_ERROR'}, status = 400)
+        
+        if not email or not password:
+            return JsonResponse({'message' : 'KEY_ERROR'}, status = 400)
+
+        try: 
+            User.objects.get(email=email)
+        except ObjectDoesNotExist:
+            return JsonResponse({'message' : 'INVALID_USER'}, status = 401)
+
+        if not User.objects.filter(email=email).filter(password=password).exists():
+            return JsonResponse({'message' : 'INVALID_USER'}, status = 401)
+
+        return JsonResponse({'message' : 'SUCCESS'}, status = 200)
