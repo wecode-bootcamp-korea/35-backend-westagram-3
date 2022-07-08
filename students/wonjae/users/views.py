@@ -11,8 +11,8 @@ class UserView(View):
         data = json.loads(request.body)
         
         try:
-            EMAIL_REGEX = r'^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
-            PASSWORD_REGEX = r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$'
+            EMAIL_REGEX		= r'^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+            PASSWORD_REGEX	= r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$'
             
             if not re.match(EMAIL_REGEX, data['email']):
                 return JsonResponse({"message" : "Email Invalid !!!"}, status=400)
