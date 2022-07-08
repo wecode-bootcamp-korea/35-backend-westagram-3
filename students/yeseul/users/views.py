@@ -21,6 +21,9 @@ class SignUpView(View):
         except KeyError:
             return JsonResponse({'message' : 'KEY_ERROR'}, status = 400)
 
+        if not email or not password:
+            return JsonResponse({'message' : 'empty email or password'}, status = 400)
+
         if User.objects.filter(email=email).exists():
             return JsonResponse({'message' : 'same email exists'}, status = 400)
             
