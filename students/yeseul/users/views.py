@@ -14,8 +14,6 @@ class SignUpView(View):
     def post(self, request):
         try:
             request_data = json.loads(request.body)
-            print(request)
-            print(request_data)
             name         = request_data['name']
             email        = request_data['email']
             password     = request_data['password']
@@ -44,7 +42,6 @@ class SignUpView(View):
         return JsonResponse({'message' : 'SUCCESS'}, status = 201)
 
 class LoginView(View):
-    # http -v POST 127.0.0.1:8000/users/login email='younghee@naver.com' password='1234!abc'
     def post(self, request):
         try:
             request_data = json.loads(request.body)
