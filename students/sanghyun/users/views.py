@@ -7,8 +7,8 @@ from django.views import View
 from users.models import User
 
 
-check_email    = '^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
-check_password = '^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$'
+EMAIL_REGEX    = '^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+PASSWORD_REGEX = '^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$'
 
 class SignUpView(View):
     def post(self, request):
@@ -19,13 +19,13 @@ class SignUpView(View):
             password = data['password']
 
 
-            if not re.match(check_email, email):
+            if not re.match(EMAIL_REGEX, email):
                 return JsonResponse(
                     {'message' : '메일주소 확인 바랍니다.'}, status=400
                     )
 
 
-            if not re.match(check_password, password):
+            if not re.match(PASSWORD_REGEX, password):
                 return JsonResponse(
                     {'message' : '비밀번호는 8글자 이상, 문자, 숫자, 특수문자 조합이어야 합니다.'}, status=400
                     )
