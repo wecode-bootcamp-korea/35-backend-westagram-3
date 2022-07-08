@@ -1,8 +1,6 @@
-import email
 import json
 import re
 
-from django.shortcuts import render
 from django.http      import JsonResponse
 from django.views     import View
 from users.models     import User
@@ -10,7 +8,7 @@ from users.models     import User
 REGEX_EMAIL    = '^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
 REGEX_PASSWORD = '^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$'
 
-class UserView(View):
+class SignUpView(View):
     def post(self, request):
         try:
             data = json.loads(request.body)
@@ -31,7 +29,7 @@ class UserView(View):
                 phoneNumber = data['phone']
             )
 
-            return JsonResponse({"message": "created"}, status=201)
+            return JsonResponse({"message": "SUCCESS"}, status=201)
 
         except KeyError:
             return JsonResponse({"message": "KEY_ERROR"}, status=400)
