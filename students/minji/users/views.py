@@ -13,11 +13,15 @@ class UserView(View):
 
             emailForm = re.compile('^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
             if not re.match(emailForm, data['email']):
-                return JsonResponse({"message": "Email Error"}, status=400 )
+                return JsonResponse({"message" : "Email Error"}, status=400)
 
             passwordForm = re.compile('^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$')
             if not re.match(passwordForm, data['password']):
-                return JsonResponse({"message": "PW Error"}, status=400 )
+                return JsonResponse({"message" : "PW Error"}, status=400)
+
+            for user in User.objects.all().values():
+                if user['email'] == data['email']:
+                    return JsonResponse({"message" : "Email Duplicate"}, status=400)
 
             User.objects.create(
                 name        = data['name'],
@@ -25,7 +29,7 @@ class UserView(View):
                 password    = data['password'],
                 phoneNumber = data['phone']
             )
-
+            
             return JsonResponse({"message": "created"}, status=201)
 
         except KeyError:
