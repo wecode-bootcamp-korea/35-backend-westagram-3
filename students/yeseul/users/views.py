@@ -16,8 +16,10 @@ class SignUpView(View):
             phone_number = request_data['phone_number'] 
         except KeyError:
             return JsonResponse({'message' : 'KEY_ERROR'}, status = 400)
-        
-        # 이미 존재하는 이메일이 있는지 확인
+
+        if not email or not password:
+            return JsonResponse({'message' : 'KEY_ERROR'}, status = 400)
+
         if User.objects.filter(email=email).exists():
             return JsonResponse({'message' : 'same email exists'}, status = 400)
             
