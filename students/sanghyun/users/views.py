@@ -1,8 +1,9 @@
 import json
 import re
+from django import views
 
-from django.http  import JsonResponse
-from django.views import View
+from django.http      import JsonResponse
+from django.views     import View
 
 from users.models import User
 
@@ -48,3 +49,23 @@ class SignUpView(View):
 
         except KeyError:
             return JsonResponse({'message' : 'Key_ERROR'}, status=400)
+
+
+class LoginView(View):
+    def post(self, request):
+        data         = json.loads(request.body)
+
+        try:
+            email    = data['email']
+            password = data['password']
+
+
+            if not User.objects.filter(email = email, password = password).exists():
+                return JsonResponse({'message' : 'INVALID_USER'}, status = 401)
+            
+
+            return JsonResponse({'message' : 'SUCCESS'}, status = 201)
+        
+        
+        except KeyError:
+            return JsonResponse({'message' : 'KEY_ERROR'}, status = 400)
