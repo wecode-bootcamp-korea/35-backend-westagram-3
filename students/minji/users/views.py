@@ -34,21 +34,21 @@ class SignUpView(View):
         except KeyError:
             return JsonResponse({"message": "KEY_ERROR"}, status=400)
 
+
 class LogInView(View):
     def post(self, request):
+
         data = json.loads(request.body)
 
         try:
-            #print(User.objects.filter(email = data['email']))
             matchEmail = User.objects.filter(email = data['email'])
-            #if User.objects.filter(email = data['email']) and User.objects.get(password=data['password']):
-            #print(data['password']==matchEmail[0].password)
 
             if User.objects.filter(email = data['email']) and data['password']==matchEmail[0].password:
                 return JsonResponse({"message": "SUCCESS"}, status = 200)
             else: 
                 return JsonResponse({"message": "INVALID_USER"}, status = 401)
+
         except KeyError:
-            return JsonResponse({"message": "KEY_ERROR"},status=400)
+            return JsonResponse({"message": "KEY_ERROR"},status = 400)
         
         
