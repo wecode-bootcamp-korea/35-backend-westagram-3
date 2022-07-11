@@ -34,8 +34,7 @@ class SignUpView(View):
             return JsonResponse({'message' : 'password validation failed'}, status = 400)
 
         # 비밀번호 암호화
-        salt = bcrypt.gensalt()
-        hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
         User.objects.create(
             name         = name,
