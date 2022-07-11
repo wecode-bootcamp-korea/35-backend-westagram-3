@@ -12,21 +12,22 @@ class SignUpView(View):
     def post(self, request):
         try:
             data = json.loads(request.body)
+            email=data['email']
 
-            if not re.match(REGEX_EMAIL, data['email']):
-                return JsonResponse({"message" : "Email Error"}, status=400)
+            if not re.match(REGEX_EMAIL, email):
+                return JsonResponse({"message" : "Invalid User"}, status=400)
 
             if not re.match(REGEX_PASSWORD, data['password']):
-                return JsonResponse({"message" : "PW Error"}, status=400)
+                return JsonResponse({"message" : "Invalid User"}, status=400)
 
-            if User.objects.filter(email = data['email']).exists():
-                return JsonResponse({"message" : "Email Duplicate"}, status=400)
+            if User.objects.filter(email = email).exists():
+                return JsonResponse({"message" : "Email Duplicated Entry"}, status=400)
 
             User.objects.create(
                 name        = data['name'],
                 email       = data['email'],
                 password    = data['password'],
-                phoneNumber = data['phone']
+                phone_number = data['phone']
             )
 
             return JsonResponse({"message": "SUCCESS"}, status=201)
@@ -41,12 +42,10 @@ class LogInView(View):
         data = json.loads(request.body)
 
         try:
-            matchEmail = User.objects.filter(email = data['email'])
-
-            if User.objects.filter(email = data['email']) and data['password']==matchEmail[0].password:
+            if User.objects.filter(email = data['email'], password=data['password']):
                 return JsonResponse({"message": "SUCCESS"}, status = 200)
-            else: 
-                return JsonResponse({"message": "INVALID_USER"}, status = 401)
+                
+            return JsonResponse({"message": "INVALID_USER"}, status = 401)
 
         except KeyError:
             return JsonResponse({"message": "KEY_ERROR"},status = 400)
