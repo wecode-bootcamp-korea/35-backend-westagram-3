@@ -1,5 +1,6 @@
 import json
 import re
+import bcrypt
 
 from django.http import JsonResponse
 from django.views import View
@@ -10,20 +11,33 @@ class UserView(View):
     def post(self, request):
         data = json.loads(request.body)
         
+        email = data['email']
+        password = data['password']
+        name=data['name']
+        telephone=data['telephone']
+        
         try:
             EMAIL_REGEX		= r'^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
             PASSWORD_REGEX	= r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$'
             
-            if not re.match(EMAIL_REGEX, data['email']):
+            if not re.match(EMAIL_REGEX, email):
                 return JsonResponse({"message" : "Email Invalid !!!"}, status=400)
                 
-            if not re.match(PASSWORD_REGEX, data['password']):
+            if not re.match(PASSWORD_REGEX, password):
             	return JsonResponse({"message" : "Password Invalid !!!"}, status=400)
             	
-            if User.objects.filter(email=data['email']).exists():
+            if User.objects.filter(email=email).exists():
                 return JsonResponse({"message" : "Email Overlapped !!!"}, status=400)
                 
-            User.objects.create(name=data['name'], email=data['email'], password=data['password'], telephone=data['telephone'])
+            hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+            decoded_password = hashed_password.decode('utf-8')
+                
+            User.objects.create(
+                name=name,
+                email=email,
+                password=decoded_password,
+                telephone=telephone
+            )
             
             return JsonResponse({"message" : "SUCCESS"}, status=201)
             
