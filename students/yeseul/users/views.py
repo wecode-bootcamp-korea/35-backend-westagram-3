@@ -1,6 +1,8 @@
-import json 
+import json
+from os import access 
 import re
 import bcrypt
+import jwt
 
 from django.http            import JsonResponse
 from django.views           import View
@@ -10,6 +12,7 @@ from users.models           import User
 
 REGEX_EMAIL = '^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
 REGEX_PASSWORD = '''^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@!%*?&!"£$%^&*()_+{}:@~<>?|=[\];'#,.\/\\-])[\S]{8,}$'''
+SECRET = 'secret'
 
 class SignUpView(View):
     def post(self, request):
@@ -54,13 +57,15 @@ class LoginView(View):
             password     = request_data['password']
 
             # DB에 있는 데이터
-            db_password = User.objects.get(email=email).password
+            db_user = User.objects.get(email=email)
 
             # 클라이언트에게 받은 비밀번호와 DB에 있는 비밀번호 비교
-            if not bcrypt.checkpw(password.encode('utf-8'), db_password.encode('utf-8')):
+            if not bcrypt.checkpw(password.encode('utf-8'), db_user.password.encode('utf-8')):
                 return JsonResponse({'message' : 'INVALID_USER'}, status = 401)
             
-            return JsonResponse({'message' : 'SUCCESS'}, status = 200)
+            # 유효한 유저인 경우 JWT 발급
+            access_token = jwt.encode({'id' : db_user.id}, SECRET, algorithm = 'HS256')
+            return JsonResponse({'message': 'SUCCESS', 'JWT': access_token}, status = 200)
         
         except KeyError:
             return JsonResponse({'message' : 'KEY_ERROR'}, status = 400)
