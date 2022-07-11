@@ -1,5 +1,6 @@
 import json
 import re
+import jwt
 
 from django.http      import JsonResponse
 from django.views     import View
@@ -44,7 +45,7 @@ class LogInView(View):
         try:
             if User.objects.filter(email = data['email'], password=data['password']):
                 return JsonResponse({"message": "SUCCESS"}, status = 200)
-                
+
             return JsonResponse({"message": "INVALID_USER"}, status = 401)
 
         except KeyError:
