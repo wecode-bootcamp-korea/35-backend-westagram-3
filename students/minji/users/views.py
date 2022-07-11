@@ -1,5 +1,6 @@
 import json
 import re
+import bcrypt
 import jwt
 
 from django.http      import JsonResponse
@@ -14,6 +15,15 @@ class SignUpView(View):
         try:
             data = json.loads(request.body)
             email=data['email']
+            password=data['password']
+
+            hashed_password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
+            decoded_password = hashed_password.decode("utf-8")
+
+            if not bcrypt.checkpw(
+                data["password"].encode("utf-8"), User.password.encode("utf-8")
+            ):
+                return JsonResponse({"MESSAGE": "INVALID_USER"}, status=401) 
 
             if not re.match(REGEX_EMAIL, email):
                 return JsonResponse({"message" : "Invalid User"}, status=400)
@@ -25,9 +35,9 @@ class SignUpView(View):
                 return JsonResponse({"message" : "Email Duplicated Entry"}, status=400)
 
             User.objects.create(
-                name        = data['name'],
-                email       = data['email'],
-                password    = data['password'],
+                name         = data['name'],
+                email        = data['email'],
+                password     = data['password'],
                 phone_number = data['phone']
             )
 
