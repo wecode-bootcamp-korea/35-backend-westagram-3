@@ -1,5 +1,6 @@
 import json 
 import re
+import bcrypt
 
 from django.http            import JsonResponse
 from django.views           import View
@@ -32,10 +33,14 @@ class SignUpView(View):
         if not re.match(REGEX_PASSWORD, password):
             return JsonResponse({'message' : 'password validation failed'}, status = 400)
 
+        # 비밀번호 암호화
+        salt = bcrypt.gensalt()
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
+
         User.objects.create(
             name         = name,
             email        = email,
-            password     = password,
+            password     = hashed_password.decode(),
             phone_number = phone_number
         )
         
