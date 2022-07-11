@@ -48,11 +48,16 @@ class SignUpView(View):
 class LoginView(View):
     def post(self, request):
         try:
+            # 클라이언트에게 받아온 데이터
             request_data = json.loads(request.body)
             email        = request_data['email']
             password     = request_data['password']
 
-            if not User.objects.get(email=email).password == password:
+            # DB에 있는 데이터
+            db_password = User.objects.get(email=email).password
+
+            # 클라이언트에게 받은 비밀번호와 DB에 있는 비밀번호 비교
+            if not bcrypt.checkpw(password.encode('utf-8'), db_password.encode('utf-8')):
                 return JsonResponse({'message' : 'INVALID_USER'}, status = 401)
             
             return JsonResponse({'message' : 'SUCCESS'}, status = 200)
