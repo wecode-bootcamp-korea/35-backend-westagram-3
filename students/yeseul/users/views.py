@@ -1,5 +1,6 @@
 import json 
 import re
+import bcrypt
 
 from django.http            import JsonResponse
 from django.views           import View
@@ -24,18 +25,18 @@ class SignUpView(View):
         if User.objects.filter(email=email).exists():
             return JsonResponse({'message' : 'same email exists'}, status = 400)
             
-        # email validation
         if not re.match(REGEX_EMAIL, email):
             return JsonResponse({'message' : 'email validation failed'}, status = 400)
         
-        # password validation(8자리 이상, 최소 하나의 문자, 하나의 숫자, 하나의 특수문자)
         if not re.match(REGEX_PASSWORD, password):
             return JsonResponse({'message' : 'password validation failed'}, status = 400)
+
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode()
 
         User.objects.create(
             name         = name,
             email        = email,
-            password     = password,
+            password     = hashed_password,
             phone_number = phone_number
         )
         
