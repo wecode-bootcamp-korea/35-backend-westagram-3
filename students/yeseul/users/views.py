@@ -2,11 +2,10 @@ import json
 import re
 import bcrypt
 import jwt
-import os
-import environ
 
 from django.http    import JsonResponse
 from django.views   import View
+from django.conf    import settings 
 from pathlib        import Path
 
 from users.models   import User
@@ -56,14 +55,8 @@ class LoginView(View):
 
             if not bcrypt.checkpw(password.encode('utf-8'), db_user.password.encode('utf-8')):
                 return JsonResponse({'message' : 'INVALID_USER'}, status = 401)
-            
-            BASE_DIR = Path(__file__).resolve().parent.parent
-            env = environ.Env(DEBUG=(bool, True))
-            environ.Env.read_env(
-                env_file=os.path.join(BASE_DIR, '.env')
-            )
 
-            access_token = jwt.encode({'id' : db_user.id}, env('JWT_SECRET'), algorithm = env('JWT_ALGORITHM'))
+            access_token = jwt.encode({'id' : db_user.id}, settings.JWT_SECRET, algorithm = settings.JWT_ALGORITHM)
             return JsonResponse({'message': 'SUCCESS', 'access_token': access_token}, status = 200)
         
         except KeyError:
