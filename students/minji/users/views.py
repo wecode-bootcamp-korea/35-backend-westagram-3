@@ -22,7 +22,7 @@ class SignUpView(View):
             if not re.match(REGEX_EMAIL, email):
                 return JsonResponse({"message" : "Invalid User"}, status=400)
 
-            if not re.match(REGEX_PASSWORD, data['password']):
+            if not re.match(REGEX_PASSWORD, password):
                 return JsonResponse({"message" : "Invalid User"}, status=400)
 
             if User.objects.filter(email = email).exists():
@@ -30,7 +30,7 @@ class SignUpView(View):
 
             User.objects.create(
                 name         = data['name'],
-                email        = data['email'],
+                email        = email,
                 password     = decoded_password,
                 phone_number = data['phone']
             )
