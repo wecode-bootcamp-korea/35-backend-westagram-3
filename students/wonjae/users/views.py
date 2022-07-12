@@ -8,7 +8,7 @@ from django.views import View
 
 from users.models import User
 
-from my_settings import SECRET_KEY
+from my_settings import SECRET_KEY, ALGORITHM
 
 class UserView(View):
     def post(self, request):
@@ -63,7 +63,7 @@ class LoginView(View):
             if not bcrypt.checkpw(password.encode('utf-8'), User.objects.get(email=email).password.encode("utf-8")):
                 return JsonResponse({"message" : "INVALID_USER"}, status=401)
                 
-            token = jwt.encode({"user_id":User.objects.get(email=email).id}, SECRET_KEY, algorithm="HS256")
+            token = jwt.encode({"id":User.objects.get(email=email).id}, SECRET_KEY, algorithm=ALGORITHM)
                 
             return JsonResponse({"token" : token}, status=200)
             
