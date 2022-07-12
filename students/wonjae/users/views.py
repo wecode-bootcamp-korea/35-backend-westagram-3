@@ -1,22 +1,26 @@
 import json
 import re
 import bcrypt
+import jwt
 
 from django.http import JsonResponse
 from django.views import View
 
 from users.models import User
 
+from my_settings import SECRET_KEY, ALGORITHM
+
 class UserView(View):
     def post(self, request):
         data = json.loads(request.body)
         
-        email = data['email']
-        password = data['password']
-        name=data['name']
-        telephone=data['telephone']
-        
         try:
+        
+            email = data['email']
+            password = data['password']
+            name=data['name']
+            telephone=data['telephone']
+        
             EMAIL_REGEX		= r'^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
             PASSWORD_REGEX	= r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$'
             
@@ -47,13 +51,22 @@ class UserView(View):
 class LoginView(View):
     def post(self, request):
     
+        data = json.loads(request.body)
+    
         try:
-            data = json.loads(request.body)
+        
+            email = data['email']
+            password = data['password']
+        
+            if not User.objects.filter(email=email).exists():
+                return JsonResponse({"message" : "INVALID_USER"}, status=401)
             
-            if not User.objects.filter(email=data['email'], password = data['password']).exists():
+            if not bcrypt.checkpw(password.encode('utf-8'), User.objects.get(email=email).password.encode("utf-8")):
                 return JsonResponse({"message" : "INVALID_USER"}, status=401)
                 
-            return JsonResponse({"message" : "SUCCESS"}, status=200)
+            token = jwt.encode({"id":User.objects.get(email=email).id}, SECRET_KEY, algorithm=ALGORITHM)
+                
+            return JsonResponse({"token" : token}, status=200)
             
         except KeyError:
             return JsonResponse({"message" : "KEY_ERROR"}, status=400)
