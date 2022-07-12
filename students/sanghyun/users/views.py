@@ -1,7 +1,4 @@
-import json
-import re
-import bcrypt
-import jwt
+import json, re, bcrypt, jwt
 
 from django.http      import JsonResponse
 from django.views     import View
@@ -57,7 +54,7 @@ class LoginView(View):
         data = json.loads(request.body)
 
         try:
-            email = data['email']
+            email    = data['email']
             password = data['password']
 
             user = User.objects.get(email=email)
