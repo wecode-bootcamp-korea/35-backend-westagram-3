@@ -12,11 +12,14 @@ REGEX_PASSWORD = '^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,
 class SignUpView(View):
     def post(self, request):
         try:
-            data = json.loads(request.body)
-            email=data['email']
-            password=data['password']
+            data         = json.loads(request.body)
 
-            hashed_password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
+            name         = data['name']
+            email        = data['email']
+            password     = data['password']
+            phone_number = data['phone']
+
+            hashed_password  = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
             decoded_password = hashed_password.decode("utf-8")
 
             if not re.match(REGEX_EMAIL, email):
@@ -29,10 +32,10 @@ class SignUpView(View):
                 return JsonResponse({"message" : "Email Duplicated Entry"}, status=400)
 
             User.objects.create(
-                name         = data['name'],
+                name         = name,
                 email        = email,
                 password     = decoded_password,
-                phone_number = data['phone']
+                phone_number = phone_number
             )
 
             return JsonResponse({"message": "SUCCESS"}, status=201)
