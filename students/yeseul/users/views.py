@@ -33,13 +33,12 @@ class SignUpView(View):
         if not re.match(REGEX_PASSWORD, password):
             return JsonResponse({'message' : 'password validation failed'}, status = 400)
 
-        # 비밀번호 암호화
-        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode()
 
         User.objects.create(
             name         = name,
             email        = email,
-            password     = hashed_password.decode(),
+            password     = hashed_password,
             phone_number = phone_number
         )
         
