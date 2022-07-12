@@ -16,9 +16,10 @@ class SignUpView(View):
     def post(self, request):
         data         = json.loads(request.body)
         try:
-            password = data['password']
-            email    = data['email']
-            password = data['password']
+            name          = data['name']
+            email         = data['email']
+            password      = data['password']
+            mobile_number = data['mobile_number']
 
             if not re.match(EMAIL_REGEX, email):
                 return JsonResponse(
@@ -39,10 +40,10 @@ class SignUpView(View):
             decoded_hashed_password = hashed_password.decode('utf-8')
 
             User.objects.create(
-                name          = data['name'],
-                email         = data['email'],
+                name          = name,
+                email         = email,
                 password      = decoded_hashed_password,
-                mobile_number = data['mobile_number']
+                mobile_number = mobile_number
             )
             return JsonResponse({'message' : 'SUCCESS'}, status=201)
 
