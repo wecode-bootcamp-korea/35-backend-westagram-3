@@ -14,12 +14,13 @@ class UserView(View):
     def post(self, request):
         data = json.loads(request.body)
         
-        email = data['email']
-        password = data['password']
-        name=data['name']
-        telephone=data['telephone']
-        
         try:
+        
+            email = data['email']
+            password = data['password']
+            name=data['name']
+            telephone=data['telephone']
+        
             EMAIL_REGEX		= r'^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
             PASSWORD_REGEX	= r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$'
             
@@ -52,11 +53,11 @@ class LoginView(View):
     
         data = json.loads(request.body)
     
-        email = data['email']
-        password = data['password']
-    
         try:
-            
+        
+            email = data['email']
+            password = data['password']
+        
             if not User.objects.filter(email=email).exists():
                 return JsonResponse({"message" : "INVALID_USER"}, status=401)
             
