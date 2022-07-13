@@ -57,9 +57,6 @@ class LogInView(View):
 
 
         try:
-            if User.objects.filter(email = email, password=password):
-                return JsonResponse({"MESSAGE": "SUCCESS"}, status = 200)
-
             if not bcrypt.checkpw(password.encode("utf-8"), User.objects.get(email=email).password.encode("utf-8")):
                 return JsonResponse({"MESSAGE": "INVALID_USER"}, status = 401)
             
@@ -68,5 +65,7 @@ class LogInView(View):
 
         except KeyError:
             return JsonResponse({"MESSAGE": "KEY_ERROR"}, status = 400)
+        except User.DoesNotExist:
+            return JsonResponse({"MESSAGE": "DoesNotExist_ERROR"}, status = 400)
         
         
