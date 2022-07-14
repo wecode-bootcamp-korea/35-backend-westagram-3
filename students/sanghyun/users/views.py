@@ -54,6 +54,8 @@ class LoginView(View):
         data = json.loads(request.body)
 
         try:
+            email    = data['email']
+            password = data['password']
 
             user = User.objects.get(email=email)
 
