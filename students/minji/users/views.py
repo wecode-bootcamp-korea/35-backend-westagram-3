@@ -6,8 +6,7 @@ import jwt
 from django.http      import JsonResponse
 from django.views     import View
 from users.models     import User
-
-from my_settings      import ALGORITHM, SECRET_KEY
+from django.conf      import settings
 
 REGEX_EMAIL    = '^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
 REGEX_PASSWORD = '^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$'
@@ -49,23 +48,24 @@ class SignUpView(View):
 
 class LogInView(View):
     def post(self, request):
-
-        data     = json.loads(request.body)
-
-        email    = data['email']
-        password = data['password']
-
-
         try:
+            data     = json.loads(request.body)
+            email    = data['email']
+            password = data['password']
+
             if not bcrypt.checkpw(password.encode("utf-8"), User.objects.get(email=email).password.encode("utf-8")):
                 return JsonResponse({"MESSAGE": "INVALID_USER"}, status = 401)
             
-            encoded_jwt = jwt.encode({'id':User.objects.get(email=email).id},SECRET_KEY,algorithm=ALGORITHM)
+            encoded_jwt = jwt.encode({'id':User.objects.get(email=email).id},settings.SECRET_KEY,algorithm=settings.ALGORITHM)
             return JsonResponse({"Token": encoded_jwt}, status = 200)
 
         except KeyError:
             return JsonResponse({"MESSAGE": "KEY_ERROR"}, status = 400)
+
         except User.DoesNotExist:
             return JsonResponse({"MESSAGE": "DoesNotExist_ERROR"}, status = 400)
+        
+        except json.JSONDecodeError:
+            return JsonResponse({"MESSAGE": "JSON_ERROR"}, status = 400)
         
         
