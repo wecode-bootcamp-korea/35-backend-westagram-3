@@ -1,14 +1,10 @@
-import json
-import re
-import bcrypt
-import jwt
+import json, re, bcrypt, jwt
 
 from django.http      import JsonResponse
 from django.views     import View
 
 from users.models import User
 from my_settings  import SECRET_KEY, ALGORITHM
-
 
 EMAIL_REGEX    = '^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
 PASSWORD_REGEX = '^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$'
@@ -47,7 +43,7 @@ class SignUpView(View):
                 password      = decoded_hashed_password,
                 mobile_number = mobile_number
             )
-            return JsonResponse({'message' : 'SUCCESS'}, status=201)
+            return JsonResponse({'message' : 'SUCCESS'}, status=200)
 
         except KeyError:
             return JsonResponse({'message' : 'Key_ERROR'}, status=400)
@@ -55,22 +51,23 @@ class SignUpView(View):
 
 class LoginView(View):
     def post(self, request):
-        data         = json.loads(request.body)
+        data = json.loads(request.body)
 
         try:
+            email    = data['email']
+            password = data['password']
 
-            user = User.objects.get(email=data['email'])
+            user = User.objects.get(email=email)
 
-            if not bcrypt.checkpw(data['password'].encode('utf-8'), user.password.encode('utf-8')):
-                return JsonResponse({'message' : 'INVALID_USER'}, status = 401)        
+            if not bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
+                return JsonResponse({'message' : 'INVALID_USER'}, status = 401)
 
-            token = jwt.encode(
-                {'id' : data['email']},
-                SECRET_KEY,
-                algorithm = ALGORITHM
-                )
+            token = jwt.encode({'id' : user.id }, SECRET_KEY, algorithm = ALGORITHM)
 
-            return JsonResponse({'JWT' : token}, status = 201)
+            return JsonResponse({'message' : 'SUCCESS','token' : token}, status = 200)
 
+        except User.DoesNotExist:
+            return JsonResponse({'message' : 'INVALID_USER'}, status=401)
+            
         except KeyError:
-            return JsonResponse({'message' : 'KEY_ERROR'}, status = 400)
+            return JsonResponse({'message' : 'KEY_ERROR'}, status=400)
