@@ -43,7 +43,7 @@ class SignUpView(View):
                 password      = decoded_hashed_password,
                 mobile_number = mobile_number
             )
-            return JsonResponse({'message' : 'SUCCESS'}, status=201)
+            return JsonResponse({'message' : 'SUCCESS'}, status=200)
 
         except KeyError:
             return JsonResponse({'message' : 'Key_ERROR'}, status=400)
@@ -62,9 +62,12 @@ class LoginView(View):
             if not bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
                 return JsonResponse({'message' : 'INVALID_USER'}, status = 401)
 
-            token = jwt.encode({'id' : email}, SECRET_KEY, algorithm = ALGORITHM)
+            token = jwt.encode({'id' : user.id }, SECRET_KEY, algorithm = ALGORITHM)
 
-            return JsonResponse({'token' : token}, status = 201)
-        
+            return JsonResponse({'message' : 'SUCCESS','token' : token}, status = 200)
+
+        except User.DoesNotExist:
+            return JsonResponse({'message' : 'INVALID_USER'}, status=401)
+            
         except KeyError:
             return JsonResponse({'message' : 'KEY_ERROR'}, status=400)
