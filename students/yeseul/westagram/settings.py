@@ -10,16 +10,13 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
-from pathlib import Path
-from my_settings import DATABASES, SECRET_KEY
-
 import pymysql
 
-pymysql.install_as_MySQLdb()
+from pathlib import Path
+from my_settings import DATABASES, SECRET_KEY, JWT_ALGORITHM
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
@@ -152,3 +149,6 @@ CORS_ALLOW_HEADERS = (
     'x-csrftoken',
     'x-requested-with',    		
 )
+
+## pymysql 설정
+pymysql.install_as_MySQLdb()
